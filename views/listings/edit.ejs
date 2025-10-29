@@ -73,6 +73,13 @@
           <div class="invalid-feedback">Please enter the number of available rooms</div>
         </div>
 
+         <!-- Phone Number -->
+        <div class="mb-3 col-md-3">
+          <label for="phoneNumber" class="form-label">Owner Phone Number (with country code)</label>
+          <input name="listing[phoneNumber]" value="<%= listing.phoneNumber || '' %>" type="text" placeholder="+1 234 567 890" class="form-control" pattern="^\\+?[0-9]{7,15}$" required>
+          <div class="invalid-feedback">Please enter a valid phone number with country code</div>
+        </div>
+
         <div class="mb-3 col-md-4">
           <label for="country" class="form-label">Country</label>
           <input name="listing[country]" value="<%= listing.country %>" type="text" placeholder="Enter country" class="form-control" required>

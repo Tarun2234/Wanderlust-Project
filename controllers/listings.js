@@ -145,6 +145,7 @@ module.exports.createListing = async (req, res) => {
       location,
       category,
       roomsAvailable,
+      phoneNumber,
     } = req.body.listing;
 
     const newListing = new Listing({
@@ -157,6 +158,7 @@ module.exports.createListing = async (req, res) => {
       geometry,
       owner: req.user._id,
       roomsAvailable,
+      phoneNumber,
     });
 
     if (req.file) {
@@ -214,6 +216,7 @@ module.exports.updateListings = async (req, res) => {
       location,
       category,
       roomsAvailable,
+      phoneNumber,
     } = req.body.listing;
 
     // Fetch new geocode for updated location
@@ -244,6 +247,7 @@ module.exports.updateListings = async (req, res) => {
         category,
         roomsAvailable,
         geometry,
+        phoneNumber,
       },
       { new: true, runValidators: true }
     );

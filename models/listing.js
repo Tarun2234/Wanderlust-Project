@@ -79,6 +79,12 @@ const listingSchema = new Schema({
     ref: "User",
   },
 
+   phoneNumber: {
+    type: String,
+    trim: true,
+    match: [/^\+\d{1,3}\d{7,15}$/, "Please enter a valid phone number with country code"],
+  },
+
   geometry: {
     type: {
       type: String,
