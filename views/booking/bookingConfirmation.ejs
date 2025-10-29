@@ -4,7 +4,9 @@
   <div class="col-md-8 offset-md-2 mb-5">
     <div class="card shadow-sm p-4 mt-5 border-success rounded-4">
       <h3 class="mb-3 text-success">Booking process done!</h3>
-      <p class="mb-1"><strong>Thank you, <%= booking.userName %>!</strong> Your booking is registered; see the status for confirmation.</p>
+      <p class="mb-1">
+        <strong>Thank you, <%= booking.userName %>!</strong> Your booking is registered; see the status for confirmation.
+      </p>
       <hr>
 
       <!-- Booking Details -->
@@ -16,15 +18,18 @@
       <p class="mb-1"><strong>Status:</strong> <%= booking.status %></p>
 
       <!-- Owner Contact Number -->
-      <% if (booking.listing.owner && booking.listing.owner.phoneNumber) { %>
+      <% if (booking.listing.phoneNumber) { %>
         <hr>
         <p class="mb-1 fw-semibold text-dark">
           <i class="fa-solid fa-phone text-success me-2"></i>
-          <strong>Owner Contact:</strong> <%= booking.listing.owner.countryCode %> <%= booking.listing.owner.phoneNumber %>
+          <strong>Owner Contact:</strong>
+          <%= booking.listing.countryCode || '' %> <%= booking.listing.phoneNumber %>
         </p>
       <% } else { %>
         <hr>
-        <p class="mb-1 text-muted"><i class="fa-solid fa-phone me-2"></i>Owner contact not available.</p>
+        <p class="mb-1 text-muted">
+          <i class="fa-solid fa-phone me-2"></i>Owner contact not available.
+        </p>
       <% } %>
 
       <a href="/listings" class="btn btn-dark mt-3">Back to Listings</a>
