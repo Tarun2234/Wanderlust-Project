@@ -260,3 +260,17 @@ body {
   color: #fe424d;
   transition: color 0.3s ease;
 }
+
+
+.f-info-socials a {
+  color: gray;                /* Default gray color for icons */
+  margin: 0 8px;
+  font-size: 1.5rem;
+  text-decoration: none;      /* Removes underline */
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.f-info-socials a:hover {
+  color: #ff5a5f;             /* Airbnb pink on hover */
+  transform: scale(1.2);
+}
