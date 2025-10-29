@@ -92,49 +92,10 @@ module.exports.showListing = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////
-// 🧭 Create a new listing (with fallback geocoding)
+// 🧭 Create a new listing (Safe Geocoding + Fallback)
 ///////////////////////////////////////////////////////
 module.exports.createListing = async (req, res) => {
   try {
-    const fullAddress = req.body.listing.location?.trim();
-
-    // Helper to query Nominatim (OpenStreetMap)
-    const fetchCoordinates = async (query) => {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`,
-        {
-          headers: {
-            "User-Agent": "WanderlustApp (wanderlust.support@example.com)",
-          },
-        }
-      );
-      return await res.json();
-    };
-
-    let data = await fetchCoordinates(fullAddress);
-
-    // Try simpler address if no result
-    if (!data || data.length === 0) {
-      const addressParts = fullAddress.split(",");
-      for (let i = 0; i < addressParts.length - 1; i++) {
-        const shorterQuery = addressParts.slice(i).join(",").trim();
-        data = await fetchCoordinates(shorterQuery);
-        if (data && data.length > 0) break;
-      }
-    }
-
-    // Final fallback
-    if (!data || data.length === 0) {
-      req.flash("error", "Location not found. Please try a simpler location name!");
-      return res.redirect("/listings/new");
-    }
-
-    // Build GeoJSON geometry
-    const geometry = {
-      type: "Point",
-      coordinates: [parseFloat(data[0].lon), parseFloat(data[0].lat)],
-    };
-
     const {
       title,
       description,
@@ -154,13 +115,35 @@ module.exports.createListing = async (req, res) => {
       country,
       location,
       category,
-      geometry,
       owner: req.user._id,
       roomsAvailable,
       phoneNumber,
       countryCode,
     });
 
+    // 🌍 Try to fetch coordinates from OpenStreetMap
+    let geometry = { type: "Point", coordinates: [77.2090, 28.6139] }; // Default (Delhi)
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
+      );
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        geometry = {
+          type: "Point",
+          coordinates: [parseFloat(data[0].lon), parseFloat(data[0].lat)],
+        };
+      } else {
+        console.warn("⚠️ Geocoding failed — using fallback coordinates (Delhi)");
+      }
+    } catch (geoErr) {
+      console.warn("⚠️ Geocoding request failed — using fallback coordinates (Delhi)");
+    }
+
+    newListing.geometry = geometry;
+
+    // Handle image upload if present
     if (req.file) {
       newListing.image = {
         url: req.file.path,
@@ -172,8 +155,8 @@ module.exports.createListing = async (req, res) => {
     req.flash("success", "New Listing Created!");
     res.redirect("/listings");
   } catch (err) {
-    console.error("Geocoding error:", err);
-    req.flash("error", "Something went wrong while fetching location!");
+    console.error("❌ Create listing error:", err);
+    req.flash("error", "Something went wrong while creating listing!");
     res.redirect("/listings/new");
   }
 };
@@ -218,20 +201,27 @@ module.exports.updateListings = async (req, res) => {
     } = req.body.listing;
 
     // Fetch updated coordinates
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
-    );
-    const data = await response.json();
+    let geometry;
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
+      );
+      const data = await response.json();
 
-    if (!data || data.length === 0) {
-      req.flash("error", "Location not found. Please enter a valid location!");
-      return res.redirect(`/listings/${id}/edit`);
+      if (!data || data.length === 0) {
+        req.flash("error", "Location not found. Please enter a valid location!");
+        return res.redirect(`/listings/${id}/edit`);
+      }
+
+      geometry = {
+        type: "Point",
+        coordinates: [parseFloat(data[0].lon), parseFloat(data[0].lat)],
+      };
+    } catch (geoErr) {
+      console.warn("⚠️ Geocoding request failed, keeping old coordinates");
+      const oldListing = await Listing.findById(id);
+      geometry = oldListing.geometry;
     }
-
-    const geometry = {
-      type: "Point",
-      coordinates: [parseFloat(data[0].lon), parseFloat(data[0].lat)],
-    };
 
     const updatedListing = await Listing.findByIdAndUpdate(
       id,

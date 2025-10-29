@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync.js");
 const Listing = require("../models/listing.js");
-const Booking = require("../models/Booking"); 
+const Booking = require("../models/Booking");
 const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
 const listingController = require("../controllers/listings.js");
 const multer = require("multer");
@@ -12,13 +12,22 @@ const upload = multer({ storage });
 ///////////////////////////////////////////////////////
 // 🏠 INDEX + CREATE
 ///////////////////////////////////////////////////////
-router.route("/")
+router
+  .route("/")
   .get(wrapAsync(listingController.index))
   .post(
     isLoggedIn,
     upload.single("listing[image]"),
     validateListing,
-    wrapAsync(listingController.createListing)
+    wrapAsync(async (req, res, next) => {
+      try {
+        await listingController.createListing(req, res);
+      } catch (err) {
+        console.error("⚠️ Error creating listing:", err.message);
+        req.flash("error", "Something went wrong while creating the listing. Please try again.");
+        res.redirect("/listings/new");
+      }
+    })
   );
 
 ///////////////////////////////////////////////////////
@@ -44,47 +53,66 @@ router.get("/:id/edit", isLoggedIn, isOwner, wrapAsync(listingController.renderE
 ///////////////////////////////////////////////////////
 // 📍 SHOW + UPDATE + DELETE listing
 ///////////////////////////////////////////////////////
-router.route("/:id")
+router
+  .route("/:id")
   .get(wrapAsync(listingController.showListing))
   .put(
     isLoggedIn,
     isOwner,
     upload.single("listing[image]"),
     validateListing,
-    wrapAsync(listingController.updateListings)
+    wrapAsync(async (req, res, next) => {
+      try {
+        await listingController.updateListings(req, res);
+      } catch (err) {
+        console.error("⚠️ Error updating listing:", err.message);
+        req.flash("error", "Something went wrong while updating! Please try again.");
+        res.redirect(`/listings/${req.params.id}/edit`);
+      }
+    })
   )
-  .delete(isLoggedIn, isOwner, wrapAsync(async (req, res) => {
-    const { id } = req.params;
-    const listing = await Listing.findById(id);
+  .delete(
+    isLoggedIn,
+    isOwner,
+    wrapAsync(async (req, res) => {
+      const { id } = req.params;
+      const listing = await Listing.findById(id);
 
-    if (!listing) {
-      req.flash("error", "Listing not found");
-      return res.redirect("/listings");
-    }
+      if (!listing) {
+        req.flash("error", "Listing not found");
+        return res.redirect("/listings");
+      }
 
-    // Find all bookings related to this listing
-    const bookings = await Booking.find({ listing: id });
+      // Find all bookings related to this listing
+      const bookings = await Booking.find({ listing: id });
 
-    // Case 1: No bookings exist → Safe to delete
-    if (bookings.length === 0) {
+      // Case 1: No bookings exist → Safe to delete
+      if (bookings.length === 0) {
+        await Listing.findByIdAndDelete(id);
+        req.flash("success", "Listing deleted successfully.");
+        return res.redirect("/listings");
+      }
+
+      // Case 2: Check if all bookings have ended (dateTo < current date)
+      const now = new Date();
+      const activeBookings = bookings.filter((b) => new Date(b.dateTo) >= now);
+
+      if (activeBookings.length > 0) {
+        req.flash(
+          "error",
+          "You cannot delete this listing until all bookings have ended."
+        );
+        return res.redirect(`/listings/${id}`);
+      }
+
+      // Case 3: All bookings are expired → Safe to delete
       await Listing.findByIdAndDelete(id);
-      req.flash("success", "Listing deleted successfully.");
-      return res.redirect("/listings");
-    }
-
-    // Case 2: Check if all bookings have ended (dateTo < current date)
-    const now = new Date();
-    const activeBookings = bookings.filter(b => new Date(b.dateTo) >= now);
-
-    if (activeBookings.length > 0) {
-      req.flash("error", "You cannot delete this listing until all bookings have ended.");
-      return res.redirect(`/listings/${id}`);
-    }
-
-    // Case 3: All bookings are expired → Safe to delete
-    await Listing.findByIdAndDelete(id);
-    req.flash("success", "Listing deleted successfully as all bookings have ended.");
-    res.redirect("/listings");
-  }));
+      req.flash(
+        "success",
+        "Listing deleted successfully as all bookings have ended."
+      );
+      res.redirect("/listings");
+    })
+  );
 
 module.exports = router;

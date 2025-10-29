@@ -17,10 +17,10 @@ const listingSchema = new Schema({
     url: {
       type: String,
       default:
-        "https://images.unsplash.com/photo-1757503745964-c76d18d947e4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyMHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1757503745964-c76d18d947e4?w=500&auto=format&fit=crop&q=60",
       set: (v) =>
         v === ""
-          ? "https://images.unsplash.com/photo-1757503745964-c76d18d947e4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyMHx8fGVufDB8fHx8fA%3D%3D"
+          ? "https://images.unsplash.com/photo-1757503745964-c76d18d947e4?w=500&auto=format&fit=crop&q=60"
           : v,
     },
   },
@@ -81,10 +81,12 @@ const listingSchema = new Schema({
   phoneNumber: {
     type: String,
     trim: true,
-    match: [/^\+\d{1,3}\d{7,15}$/, "Please enter a valid phone number with country code"],
+    match: [
+      /^\+?\d{7,15}$/,
+      "Please enter a valid phone number (e.g., +14155552671)",
+    ],
   },
 
-  // Added new field
   countryCode: {
     type: String,
     trim: true,
@@ -94,16 +96,16 @@ const listingSchema = new Schema({
     type: {
       type: String,
       enum: ["Point"],
-      required: true,
+      default: "Point", // ✅ Always defined
     },
     coordinates: {
       type: [Number],
-      required: true,
+      default: [0, 0], // ✅ Safe fallback if location fetch fails
     },
   },
 });
 
-// Cascade delete reviews when a listing is deleted
+// ====== Cascade delete reviews when listing deleted ======
 listingSchema.post("findOneAndDelete", async (listing) => {
   if (listing) {
     await Review.deleteMany({ _id: { $in: listing.reviews } });
