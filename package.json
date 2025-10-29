@@ -1,18 +1,24 @@
 {
-  
-  "engines": {
-    "node": "22.18.0"
-  },
-  
-  "name": "major-project-airbnb",
+  "name": "wanderlust-by-tarun",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Full-stack Airbnb-style web app built with Express, MongoDB, and EJS templates.",
+  "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "vercel-build": "echo 'Vercel build step - no additional build required'"
   },
-  "keywords": [],
-  "author": "",
+  "engines": {
+    "node": "22.x"
+  },
+  "keywords": [
+    "wanderlust",
+    "travel",
+    "airbnb-clone",
+    "express",
+    "ejs",
+    "mongodb"
+  ],
+  "author": "Tarun",
   "license": "ISC",
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.16.2",
