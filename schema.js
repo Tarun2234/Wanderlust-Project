@@ -36,6 +36,24 @@ module.exports.listingSchema = Joi.object({
       "any.required": "Country is required"
     }),
 
+    countryCode: Joi.string()
+      .pattern(/^\+\d{1,3}$/)
+      .required()
+      .messages({
+        "string.pattern.base": "Country code must be in format +XX or +XXX",
+        "string.empty": "Country code cannot be empty",
+        "any.required": "Country code is required"
+      }),
+
+    phoneNumber: Joi.string()
+      .pattern(/^\d{7,15}$/)
+      .required()
+      .messages({
+        "string.pattern.base": "Phone number must contain 7–15 digits only",
+        "string.empty": "Phone number cannot be empty",
+        "any.required": "Phone number is required"
+      }),
+
     location: Joi.string().required().messages({
       "string.empty": "Location cannot be empty",
       "any.required": "Location is required"

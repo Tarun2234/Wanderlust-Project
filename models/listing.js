@@ -59,7 +59,6 @@ const listingSchema = new Schema({
     required: true,
   },
 
-  
   roomsAvailable: {
     type: Number,
     required: true,
@@ -79,10 +78,16 @@ const listingSchema = new Schema({
     ref: "User",
   },
 
-   phoneNumber: {
+  phoneNumber: {
     type: String,
     trim: true,
     match: [/^\+\d{1,3}\d{7,15}$/, "Please enter a valid phone number with country code"],
+  },
+
+  // Added new field
+  countryCode: {
+    type: String,
+    trim: true,
   },
 
   geometry: {
