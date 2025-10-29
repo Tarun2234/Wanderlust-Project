@@ -18,15 +18,26 @@ const User = require("./models/user.js");
 
 const databaseConnectionLink = process.env.ATLASDB_URL;
 
-// ====== Database Connection ======
-async function connectDB() {
+// ====== Database Connection (Optimized for Vercel) ======
+const connectDB = async () => {
+  if (global._mongooseConnection) {
+    // 🔁 Reuse existing connection
+    return global._mongooseConnection;
+  }
+
   try {
-    await mongoose.connect(databaseConnectionLink);
-    console.log("✅ MongoDB connected successfully");
+    const db = await mongoose.connect(databaseConnectionLink, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    global._mongooseConnection = db;
+    console.log("✅ MongoDB connected (persistent connection)");
+    return db;
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
   }
-}
+};
+
 connectDB();
 
 // ====== App Configuration ======
@@ -98,9 +109,9 @@ app.get("/", (req, res) => {
   res.redirect("/listings");
 });
 
-// Catch-all for unmatched routes
+// ====== Catch-all for unmatched routes ======
 app.use((req, res, next) => {
-    next(new ExpressError(404, "Page Not Found!"));
+  next(new ExpressError(404, "Page Not Found!"));
 });
 
 // ====== Error Handler ======
