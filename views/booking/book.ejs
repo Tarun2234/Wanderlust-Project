@@ -1,0 +1,79 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row">
+  <div class="col-8 offset-2 mb-4 mt-3">
+    <h3 class="mb-4">Book Your Stay at: <strong><%= listing.title %></strong></h3>
+
+    <!-- Listing summary -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="card-title">📍 Location: <%= listing.location %>, <%= listing.country %></h5>
+        <p class="card-text">
+          💰 Price per night: <strong>₹<%= listing.price %></strong><br>
+          🏠 Rooms Available: <strong><%= listing.roomsAvailable %></strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- Booking Form -->
+    <form action="/bookings/<%= listing._id %>/book" method="POST" novalidate class="needs-validation">
+
+      <!-- Name -->
+      <div class="mb-3">
+        <label for="userName" class="form-label">Full Name</label>
+        <input name="booking[userName]" type="text" class="form-control" placeholder="Enter your full name" required>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please enter your name</div>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input name="booking[email]" type="email" class="form-control" placeholder="Enter your email address" required>
+        <div class="valid-feedback">Valid email!</div>
+        <div class="invalid-feedback">Please enter a valid email address</div>
+      </div>
+
+      <!-- Phone -->
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone</label>
+        <input name="booking[phone]" type="text" class="form-control" placeholder="Enter your phone number" required pattern="[0-9]{10}">
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Phone number must be 10 digits</div>
+      </div>
+
+      <!-- Date Range -->
+      <div class="row">
+        <div class="mb-3 col-md-6">
+          <label for="dateFrom" class="form-label">From</label>
+          <input name="booking[dateFrom]" type="date" class="form-control" required min="<%= new Date().toISOString().split('T')[0] %>"id="dateFrom">
+          <div class="invalid-feedback">Please select a start date</div>
+        </div>
+        <div class="mb-3 col-md-6">
+          <label for="dateTo" class="form-label">To</label>
+          <input name="booking[dateTo]" type="date" class="form-control" required min="<%= new Date().toISOString().split('T')[0] %>"id="dateTo">
+          <div class="invalid-feedback">Please select an end date</div>
+        </div>
+      </div>
+
+      <!-- People -->
+      <div class="mb-3">
+        <label for="people" class="form-label">Number of People</label>
+        <input name="booking[people]" type="number" class="form-control" placeholder="Enter number of guests" required min="1">
+        <div class="invalid-feedback">Please enter a valid number (1 - <%= listing.roomsAvailable %>)</div>
+      </div>
+
+      <!-- Special Requests -->
+      <div class="mb-3">
+        <label for="specialRequests" class="form-label">Special Requests</label>
+        <textarea name="booking[specialRequests]" class="form-control" placeholder="Any special requests?" rows="3"></textarea>
+      </div>
+
+      <!-- Hidden Listing ID -->
+      <input type="hidden" name="booking[listingId]" value="<%= listing._id %>">
+
+      <!-- Submit -->
+      <button class="btn btn-dark mt-3 w-100">Book Now</button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row">
+  <div class="col-md-8 offset-md-2 mb-5">
+    <div class="card shadow-sm p-4 mt-5 border-success rounded-4">
+      <h3 class="mb-3 text-success">Booking process done!</h3>
+      <p class="mb-1"><strong>Thank you, <%= booking.userName %>!</strong> Your booking is registered see the status for confirmation.</p>
+      <hr>
+      <p class="mb-1"><strong>Listing:</strong> <%= booking.listing.title %></p>
+      <p class="mb-1"><strong>From:</strong> <%= booking.dateFrom.toDateString() %></p>
+      <p class="mb-1"><strong>To:</strong> <%= booking.dateTo.toDateString() %></p>
+      <p class="mb-1"><strong>Number of People:</strong> <%= booking.people %></p>
+      <p class="mb-1"><strong>Special Requests:</strong> <%= booking.specialRequests || 'None' %></p>
+      <p class="mb-1"><strong>Status:</strong> <%= booking.status %></p>
+      <a href="/listings" class="btn btn-dark mt-3">Back to Listings</a>
+    </div>
+  </div>
+</div>

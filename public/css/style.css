@@ -1,0 +1,233 @@
+body{
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container{
+  flex: 1;
+}
+
+.navbar{
+  height: 5rem;
+  background-color: white;
+}
+
+.fa-compass{
+  color: #fe424d;
+  font-size: 2rem;
+}
+
+.nav-link{
+  color: #222222 !important;
+}
+
+/* /////////////////////////Footer///////////////////////////// */
+.f-info-links a{
+  text-decoration: none;
+  color: #222222;
+}
+
+.f-info-links a:hover{
+  text-decoration: underline;
+}
+
+.f-info-links, .f-info-socials, .f-info-brand{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+.f-info-socials i{
+  margin-right: 1rem;
+  font-size: 1.2rem;
+}
+
+.f-info{
+  height: 8rem;
+  background-color: #ebebeb;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: space-evenly;
+  text-align: center;
+}
+
+
+/* Cards */
+.listing-card{
+  border: none !important;
+  margin-bottom: 3rem;
+}
+
+.card-img-top{
+  border-radius: 1rem !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  
+}
+
+.card-body{
+  padding: 0 !important;
+}
+
+.listing-list{
+  text-decoration: none;
+}
+
+/* Card Effect */
+.card-img-overlay{
+  opacity: 0;
+}
+
+
+.card-img-overlay:hover{
+  opacity: 0.2;
+  background-color: white;
+}
+
+
+/* New page */
+.add-btn{
+  background-color: #fe424d !important;
+  border: none !important;
+}
+
+/* Edit page */
+.edit-btn{
+  background-color: #fe424d !important;
+  border: none !important;
+}
+
+
+/* Show Page */
+
+.show-image{
+  height: 30vh;
+}
+
+.btns{
+  display: flex;
+}
+
+.show-card{
+  padding-left: 0;
+  padding-right: 0;
+}
+
+
+#map {
+  height: 400px;
+  width: 80vh;
+}
+
+
+/* Filters container */
+#filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Each filter button */
+.filter-form button.filter {
+  text-align: center;
+  margin-right: 2rem;
+  margin-top: 2rem;
+  opacity: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit; /* makes text use default color */
+  transition: color 0.3s ease, opacity 0.3s ease; /* smooth effect */
+}
+
+/* On hover — make text & icon pink */
+.filter-form button.filter:hover {
+  opacity: 1;
+  color: #fe424d; /* pink color */
+  cursor: pointer;
+}
+
+/* If buttons have icons inside, color them too */
+.filter-form button.filter:hover i {
+  color: #fe424d;
+}
+
+
+/* Filter text */
+.filter p {
+  font-size: 0.8rem;
+}
+
+
+/* Tax toggle button */
+.tax-info{
+  display: none;
+}
+
+.tax-toggle {
+  border: 1px solid #ccc;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  height: 3.5rem;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5rem;
+}
+
+.tax-toggle input.form-check-input {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.tax-toggle label {
+  margin: 0;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.search-btn {
+  background-color: #fe424d !important;
+  color: white !important;
+  border-radius: 25px !important;
+  padding: 0.5rem 1rem !important;
+  border: none !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.search-btn:hover {
+  background-color: #fe424d !important;
+  color: white !important;
+  opacity: 0.9;
+}
+
+.search-btn:active {
+  background-color: white !important;
+  color: #fe424d !important;
+  border: 2px solid #fe424d !important;
+}
+
+.search-input {
+  border-radius: 25px !important;
+  padding: 0.5rem 3rem !important;
+  font-size: 1rem !important;
+}
+
+
+
+
+
+
+

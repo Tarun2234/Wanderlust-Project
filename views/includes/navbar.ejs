@@ -1,0 +1,161 @@
+<nav class="navbar navbar-expand-md bg-white border-bottom sticky-top py-2 shadow-sm">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold" href="/listings" style="color: #fe424d;">
+      <i class="fa-regular fa-compass"></i> Wanderlust
+    </a>
+
+    <!-- Toggler -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse justify-content-between" id="navbarNavAltMarkup">
+      
+      <!-- Left side -->
+      <ul class="navbar-nav align-items-center">
+        <li class="nav-item">
+          <a class="nav-link" href="/listings">Explore</a>
+        </li>
+
+        <!-- Dropdown Menu -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Manage
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/listings/new">Airbnb your home</a></li>
+            <% if (currUser) { %>
+              <li><a class="dropdown-item" href="/bookings/myBookings">Your Bookings</a></li>
+              <li><a class="dropdown-item" href="/bookings/requests">Booking Requests</a></li>
+            <% } %>
+          </ul>
+        </li>
+
+        <% if (currUser) { %>
+          <li class="nav-item">
+            <span class="navbar-text ms-2">
+              👋 <strong><%= currUser.username %></strong>
+            </span>
+          </li>
+        <% } %>
+      </ul>
+
+      <!-- Center: Search -->
+      <div class="d-flex justify-content-center flex-grow-1 my-2 my-md-0">
+        <form class="d-flex justify-content-center search-form" role="search" action="/listings/search" method="GET">
+          <input
+            class="form-control me-2 search-input"
+            type="search"
+            name="query"
+            placeholder="Search"
+          />
+          <button class="btn search-btn" type="submit">
+            <i class="fa-solid fa-magnifying-glass"></i> Search
+          </button>
+        </form>
+      </div>
+
+      <!-- Right side -->
+      <ul class="navbar-nav ms-md-3 mt-3 mt-md-0">
+        <% if (!currUser) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/signup"><b>Sign up</b></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login"><b>Login</b></a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout"><b>Logout</b></a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .navbar-nav .nav-link {
+    color: #333 !important;
+    transition: color 0.2s ease;
+  }
+
+  .navbar-nav .nav-link:hover {
+    color: #fe424d !important;
+  }
+
+  .search-btn {
+    background-color: #fe424d;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0 20px;
+  }
+
+  .search-btn:hover {
+    background-color: #e63b45;
+    color: white;
+  }
+
+  .search-input {
+    border-radius: 25px;
+    padding: 8px 18px;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
+  }
+
+  .search-input:focus {
+    border-color: #fe424d;
+    box-shadow: 0 0 0 0.2rem rgba(254, 66, 77, 0.25);
+  }
+
+  /* Center search bar & make wider */
+  .search-form {
+    width: 40%;
+    min-width: 300px;
+  }
+
+  /* Prevent overlapping when collapsed */
+  @media (max-width: 768px) {
+    .navbar-collapse {
+      background-color: #fff;
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+
+    .search-form {
+      width: 100% !important;
+    }
+
+    .search-input {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+
+    .search-btn {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .navbar-nav.ms-md-3 {
+      margin-left: 0 !important;
+    }
+  }
+</style>

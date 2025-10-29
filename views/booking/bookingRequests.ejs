@@ -1,0 +1,98 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-5 mb-5">
+  <h3 class="text-center mb-5 fw-bold">Booking Requests for Your Listings</h3>
+
+  <% if (!bookings || bookings.length === 0) { %>
+    <p class="text-muted text-center fs-5 mt-5">No booking requests yet.</p>
+  <% } else { %>
+    <div class="row g-4 justify-content-center">
+      <% bookings.forEach(function(booking) { %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card border-0 shadow-lg rounded-4 overflow-hidden h-100 hover-card">
+            
+            <!-- Listing Image -->
+            <img 
+              src="<%= booking.listing.image.url %>" 
+              alt="<%= booking.listing.title %>"
+              class="card-img-top"
+              style="height: 220px; object-fit: cover;"
+            >
+
+            <!-- Card Body -->
+            <div class="card-body px-4 py-3">
+              <h5 class="card-title fw-semibold mb-2 text-primary"><%= booking.listing.title %></h5>
+
+              <p class="card-text small text-muted mb-1">
+                <i class="fa-solid fa-user me-2 text-dark"></i>
+                <strong>User:</strong> <%= booking.userName %>
+              </p>
+              <p class="card-text small text-muted mb-1">
+                <i class="fa-solid fa-phone me-2 text-dark"></i>
+                <strong>Phone:</strong> <%= booking.phone %>
+              </p>
+              <p class="card-text small text-muted mb-1">
+                <i class="fa-solid fa-calendar-days me-2 text-dark"></i>
+                <strong>From:</strong> <%= booking.dateFrom.toDateString() %>
+              </p>
+              <p class="card-text small text-muted mb-1">
+                <i class="fa-solid fa-calendar-check me-2 text-dark"></i>
+                <strong>To:</strong> <%= booking.dateTo.toDateString() %>
+              </p>
+              <p class="card-text small text-muted mb-1">
+                <i class="fa-solid fa-users me-2 text-dark"></i>
+                <strong>People:</strong> <%= booking.people %>
+              </p>
+
+              <p class="card-text small text-muted mt-2">
+                <i class="fa-solid fa-message me-2 text-dark"></i>
+                <strong>Special Requests:</strong> <%= booking.specialRequests || 'None' %>
+              </p>
+
+              <!-- Status Badge -->
+              <% if (booking.status === 'Confirmed') { %>
+                <span class="badge bg-success">Confirmed</span>
+              <% } else if (booking.status === 'Rejected') { %>
+                <span class="badge bg-danger">Rejected</span>
+              <% } else if (booking.status === 'Expired') { %>
+                <span class="badge bg-secondary">Expired</span>
+              <% } else { %>
+                <span class="badge bg-warning text-dark">Pending</span>
+              <% } %>
+            </div>
+
+            <!-- Card Footer -->
+            <div class="card-footer bg-light border-0 text-center py-3">
+              <% if (booking.status === 'Pending') { %>
+                <form action="/bookings/<%= booking._id %>/confirm" method="POST" class="d-inline">
+                  <button class="btn btn-success btn-sm px-4 rounded-pill" type="submit">
+                    <i class="fa-solid fa-check me-1"></i> Confirm
+                  </button>
+                </form>
+                <form action="/bookings/<%= booking._id %>/reject" method="POST" class="d-inline">
+                  <button class="btn btn-danger btn-sm px-4 rounded-pill" type="submit">
+                    <i class="fa-solid fa-xmark me-1"></i> Reject
+                  </button>
+                </form>
+              <% } else if (booking.status === 'Expired') { %>
+                <small class="text-muted fst-italic">Booking expired</small>
+              <% } else { %>
+                <small class="text-muted">Action completed</small>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<style>
+  .hover-card {
+    transition: all 0.25s ease;
+  }
+  .hover-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  }
+</style>
