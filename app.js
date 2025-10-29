@@ -90,6 +90,10 @@ app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 app.use('/bookings', bookingRoutes);
 
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
+
 
 // Catch-all for unmatched routes
 app.use((req, res, next) => {
