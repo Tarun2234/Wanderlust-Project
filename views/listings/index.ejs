@@ -1,6 +1,19 @@
 <% layout("/layouts/boilerplate") %>
 
-<div id="filters" class="d-flex flex-row flex-wrap flex-sm-nowrap overflow-auto mb-3">
+<!-- 🌐 Mobile Filter Button -->
+<div class="text-center d-md-none my-3">
+  <button
+    type="button"
+    class="btn btn-outline-secondary"
+    data-bs-toggle="modal"
+    data-bs-target="#filterModal"
+  >
+    <i class="fa-solid fa-filter"></i> Filters
+  </button>
+</div>
+
+<!-- 🖥️ Desktop Filter Bar -->
+<div id="filters" class="d-none d-md-flex flex-row flex-wrap flex-sm-nowrap overflow-auto mb-3">
   <!-- Trending -->
   <form method="POST" action="/listings/filter" class="filter-form me-2">
     <input type="hidden" name="category" value="Trending">
@@ -64,7 +77,7 @@
     </button>
   </form>
 
-    <!-- Beaches -->
+  <!-- Beaches -->
   <form method="POST" action="/listings/filter" class="filter-form me-2">
     <input type="hidden" name="category" value="Beaches">
     <button type="submit" class="filter">
@@ -81,7 +94,6 @@
       <p>Cities</p>
     </button>
   </form>
-
 
   <!-- Farms -->
   <form method="POST" action="/listings/filter" class="filter-form me-2">
@@ -102,19 +114,68 @@
   </form>
 
   <!-- Tax toggle -->
-<!-- Tax toggle with slider -->
-<div class="tax-toggle">
-  <div class="form-check form-switch ms-2">
-    <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
-    <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
+  <div class="tax-toggle">
+    <div class="form-check form-switch ms-2">
+      <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+      <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
+    </div>
   </div>
 </div>
 
+<!-- 📱 Mobile Filter Modal -->
+<div
+  class="modal fade"
+  id="filterModal"
+  tabindex="-1"
+  aria-labelledby="filterModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="filterModalLabel">Select a Category</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+          <% const mobileCategories = [
+            { name: "Trending", icon: "fa-fire" },
+            { name: "Rooms", icon: "fa-bed" },
+            { name: "Iconic Cities", icon: "fa-mountain-city" },
+            { name: "Mountains", icon: "fa-mountain" },
+            { name: "Castles", icon: "fa-fort-awesome" },
+            { name: "Pools", icon: "fa-person-swimming" },
+            { name: "Camping", icon: "fa-campground" },
+            { name: "Beaches", icon: "fa-umbrella-beach" },
+            { name: "Cities", icon: "fa-city" },
+            { name: "Farms", icon: "fa-cow" },
+            { name: "Arctic", icon: "fa-snowflake" },
+          ]; %>
 
+          <% mobileCategories.forEach(cat => { %>
+            <form method="POST" action="/listings/filter" class="w-100">
+              <input type="hidden" name="category" value="<%= cat.name %>">
+              <button
+                type="submit"
+                class="btn btn-outline-dark w-100 mb-2"
+                data-bs-dismiss="modal"
+              >
+                <i class="fa-solid <%= cat.icon %> me-2"></i> <%= cat.name %>
+              </button>
+            </form>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-
-<!-- Listings Display -->
+<!-- 🏘️ Listings Display -->
 <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
   <% for(let listing of allListings) { %>
     <a href="/listings/<%= listing.id %>" class="listing-list">
@@ -137,10 +198,10 @@
   const taxSwitch = document.getElementById("switchCheckDefault");
   taxSwitch.addEventListener("click", () => {
     let taxInfo = document.getElementsByClassName("tax-info");
-    for(info of taxInfo){
-      if(info.style.display!= "inline"){
+    for (info of taxInfo) {
+      if (info.style.display != "inline") {
         info.style.display = "inline";
-      }else{
+      } else {
         info.style.display = "none";
       }
     }
