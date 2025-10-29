@@ -14,7 +14,7 @@ module.exports.index = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////
-// Filter listings by category
+// 🏷️ Filter listings by category
 ///////////////////////////////////////////////////////
 module.exports.filterByCategory = async (req, res) => {
   try {
@@ -29,7 +29,7 @@ module.exports.filterByCategory = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////
-// Search listings by title or location
+// 🔍 Search listings by title or location
 ///////////////////////////////////////////////////////
 module.exports.searchListings = async (req, res) => {
   try {
@@ -47,14 +47,14 @@ module.exports.searchListings = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////
-// Render form to create a new listing
+// ➕ Render form to create a new listing
 ///////////////////////////////////////////////////////
 module.exports.renderNewForm = (req, res) => {
   res.render("listings/new.ejs");
 };
 
 ///////////////////////////////////////////////////////
-// Show a single listing + auto-expire old bookings
+// 🏡 Show a single listing + auto-expire old bookings
 ///////////////////////////////////////////////////////
 module.exports.showListing = async (req, res) => {
   const { id } = req.params;
@@ -67,7 +67,7 @@ module.exports.showListing = async (req, res) => {
     return res.redirect("/listings");
   }
 
-  // Auto-expire old confirmed bookings and free up rooms
+  // Auto-expire old confirmed bookings
   const today = new Date();
   const confirmedBookings = await Booking.find({
     listing: listing._id,
@@ -75,7 +75,6 @@ module.exports.showListing = async (req, res) => {
   });
 
   let expiredCount = 0;
-
   for (let booking of confirmedBookings) {
     if (new Date(booking.dateTo) < today) {
       booking.status = "Expired";
@@ -93,13 +92,13 @@ module.exports.showListing = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////
-// Create a new listing (with smart fallback geocoding)
+// 🧭 Create a new listing (with fallback geocoding)
 ///////////////////////////////////////////////////////
 module.exports.createListing = async (req, res) => {
   try {
-    const fullAddress = req.body.listing.location.trim();
+    const fullAddress = req.body.listing.location?.trim();
 
-    // Helper function to query Nominatim (OpenStreetMap)
+    // Helper to query Nominatim (OpenStreetMap)
     const fetchCoordinates = async (query) => {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`,
@@ -112,10 +111,9 @@ module.exports.createListing = async (req, res) => {
       return await res.json();
     };
 
-    // Try full address first
     let data = await fetchCoordinates(fullAddress);
 
-    // If not found, try progressively simpler forms
+    // Try simpler address if no result
     if (!data || data.length === 0) {
       const addressParts = fullAddress.split(",");
       for (let i = 0; i < addressParts.length - 1; i++) {
@@ -131,7 +129,7 @@ module.exports.createListing = async (req, res) => {
       return res.redirect("/listings/new");
     }
 
-    // Create geometry for map
+    // Build GeoJSON geometry
     const geometry = {
       type: "Point",
       coordinates: [parseFloat(data[0].lon), parseFloat(data[0].lat)],
@@ -180,11 +178,8 @@ module.exports.createListing = async (req, res) => {
   }
 };
 
-
-
-
 ///////////////////////////////////////////////////////
-// Render edit form for a listing
+// ✏️ Render edit form for a listing
 ///////////////////////////////////////////////////////
 module.exports.renderEditForm = async (req, res) => {
   const { id } = req.params;
@@ -205,7 +200,7 @@ module.exports.renderEditForm = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////
-// Update a listing (with OpenStreetMap geocode)
+// 🛠️ Update listing (with OpenStreetMap geocode)
 ///////////////////////////////////////////////////////
 module.exports.updateListings = async (req, res) => {
   try {
@@ -222,7 +217,7 @@ module.exports.updateListings = async (req, res) => {
       countryCode,
     } = req.body.listing;
 
-    // Fetch new geocode for updated location
+    // Fetch updated coordinates
     const response = await fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
     );
@@ -238,7 +233,6 @@ module.exports.updateListings = async (req, res) => {
       coordinates: [parseFloat(data[0].lon), parseFloat(data[0].lat)],
     };
 
-    // Update listing with new data and geometry
     const updatedListing = await Listing.findByIdAndUpdate(
       id,
       {
@@ -265,45 +259,42 @@ module.exports.updateListings = async (req, res) => {
     }
 
     if (!updatedListing) {
-      req.flash("error", "Listing not found");
+      req.flash("error", "Listing not found!");
       return res.redirect("/listings");
     }
 
     req.flash("success", "Listing Updated Successfully!");
     res.redirect(`/listings/${id}`);
   } catch (err) {
-    console.error(err);
+    console.error("Update error:", err);
     req.flash("error", "Something went wrong while updating!");
     res.redirect("/listings");
   }
 };
 
 ///////////////////////////////////////////////////////
-// Delete a listing (only if no active bookings)
+// 🗑️ Delete listing (only if no active bookings)
 ///////////////////////////////////////////////////////
 module.exports.destroyListing = async (req, res) => {
   const { id } = req.params;
-
   const listing = await Listing.findById(id);
+
   if (!listing) {
     req.flash("error", "Listing not found");
     return res.redirect("/listings");
   }
 
-  // Check all bookings for this listing
   const bookings = await Booking.find({ listing: id });
   const now = new Date();
 
-  // Allow delete if:
-  // 1. No bookings exist
-  // 2. All bookings have expired (dateTo < today)
+  // Allow delete only if no active bookings
   if (bookings.length === 0) {
     await Listing.findByIdAndDelete(id);
     req.flash("success", "Listing deleted successfully (no bookings found).");
     return res.redirect("/listings");
   }
 
-  const activeBookings = bookings.filter(b => new Date(b.dateTo) >= now);
+  const activeBookings = bookings.filter((b) => new Date(b.dateTo) >= now);
   if (activeBookings.length > 0) {
     req.flash("error", "You cannot delete this listing until all bookings have ended.");
     return res.redirect(`/listings/${id}`);
