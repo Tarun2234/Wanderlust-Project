@@ -98,9 +98,9 @@ app.get("/", (req, res) => {
   res.redirect("/listings");
 });
 
-// ====== 404 Handler ======
-app.all("*", (req, res, next) => {
-  next(new ExpressError(404, "Page Not Found!"));
+// Catch-all for unmatched routes
+app.use((req, res, next) => {
+    next(new ExpressError(404, "Page Not Found!"));
 });
 
 // ====== Error Handler ======
