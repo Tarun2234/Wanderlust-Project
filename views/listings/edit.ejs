@@ -73,13 +73,28 @@
           <div class="invalid-feedback">Please enter the number of available rooms</div>
         </div>
 
-         <!-- Phone Number -->
-        <div class="mb-3 col-md-3">
-          <label for="phoneNumber" class="form-label">Owner Phone Number (with country code)</label>
-          <input name="listing[phoneNumber]" value="<%= listing.phoneNumber || '' %>" type="text" placeholder="+1 234 567 890" class="form-control" pattern="^\\+?[0-9]{7,15}$" required>
-          <div class="invalid-feedback">Please enter a valid phone number with country code</div>
+         <!-- Phone Number with Country Code -->
+        <div class="mb-3 col-md-4">
+          <label for="phoneNumber" class="form-label">Owner Phone Number</label>
+          <div class="input-group">
+            <select name="listing[countryCode]" class="form-select" style="max-width: 120px;" required>
+              <option value="+1" <%= listing.countryCode === "+1" ? "selected" : "" %>>+1 (US)</option>
+              <option value="+44" <%= listing.countryCode === "+44" ? "selected" : "" %>>+44 (UK)</option>
+              <option value="+91" <%= listing.countryCode === "+91" ? "selected" : "" %>>+91 (IN)</option>
+              <option value="+61" <%= listing.countryCode === "+61" ? "selected" : "" %>>+61 (AU)</option>
+              <option value="+81" <%= listing.countryCode === "+81" ? "selected" : "" %>>+81 (JP)</option>
+              <option value="+49" <%= listing.countryCode === "+49" ? "selected" : "" %>>+49 (DE)</option>
+              <option value="+33" <%= listing.countryCode === "+33" ? "selected" : "" %>>+33 (FR)</option>
+              <option value="+39" <%= listing.countryCode === "+39" ? "selected" : "" %>>+39 (IT)</option>
+              <option value="+86" <%= listing.countryCode === "+86" ? "selected" : "" %>>+86 (CN)</option>
+              <option value="+971" <%= listing.countryCode === "+971" ? "selected" : "" %>>+971 (UAE)</option>
+            </select>
+            <input name="listing[phoneNumber]" value="<%= listing.phoneNumber || '' %>" type="text" placeholder="1234567890" class="form-control" pattern="^[0-9]{7,15}$" required>
+          </div>
+          <div class="invalid-feedback">Please enter a valid phone number</div>
         </div>
-
+          
+        <!-- Country -->
         <div class="mb-3 col-md-4">
           <label for="country" class="form-label">Country</label>
           <input name="listing[country]" value="<%= listing.country %>" type="text" placeholder="Enter country" class="form-control" required>

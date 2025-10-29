@@ -78,17 +78,31 @@
 
       <!-- Owner Phone Number -->
       <div class="mb-3">
-        <label for="phoneNumber" class="form-label">Owner Phone Number (with country code)</label>
-        <input
-          name="listing[phoneNumber]"
-          placeholder="+91XXXXXXXXXX"
-          type="tel"
-          class="form-control"
-          pattern="^\+\d{1,3}\d{7,15}$"
-          title="Include country code, e.g., +919876543210"
-          required
-        >
-        <div class="invalid-feedback">Please enter a valid phone number with country code</div>
+        <label for="phoneNumber" class="form-label">Owner Phone Number</label>
+        <div class="input-group">
+          <select class="form-select" id="countryCode" name="listing[countryCode]" style="max-width: 120px;">
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+61">🇦🇺 +61</option>
+            <option value="+91" selected>🇮🇳 +91</option>
+            <option value="+81">🇯🇵 +81</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+39">🇮🇹 +39</option>
+            <option value="+971">🇦🇪 +971</option>
+          </select>
+          <input
+            type="tel"
+            name="listing[phoneNumber]"
+            placeholder="Enter phone number"
+            class="form-control"
+            pattern="^\d{7,15}$"
+            title="Enter only numbers without country code"
+            required
+          >
+        </div>
+        <div class="form-text text-muted">Include country code using the dropdown above</div>
+        <div class="invalid-feedback">Please enter a valid phone number</div>
       </div>
 
       <!-- Submit -->
