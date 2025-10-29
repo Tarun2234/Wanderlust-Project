@@ -65,14 +65,14 @@ router.route("/:id")
     // Find all bookings related to this listing
     const bookings = await Booking.find({ listing: id });
 
-    // ✅ Case 1: No bookings exist → Safe to delete
+    // Case 1: No bookings exist → Safe to delete
     if (bookings.length === 0) {
       await Listing.findByIdAndDelete(id);
       req.flash("success", "Listing deleted successfully.");
       return res.redirect("/listings");
     }
 
-    // ✅ Case 2: Check if all bookings have ended (dateTo < current date)
+    // Case 2: Check if all bookings have ended (dateTo < current date)
     const now = new Date();
     const activeBookings = bookings.filter(b => new Date(b.dateTo) >= now);
 
@@ -81,7 +81,7 @@ router.route("/:id")
       return res.redirect(`/listings/${id}`);
     }
 
-    // ✅ Case 3: All bookings are expired → Safe to delete
+    // Case 3: All bookings are expired → Safe to delete
     await Listing.findByIdAndDelete(id);
     req.flash("success", "Listing deleted successfully as all bookings have ended.");
     res.redirect("/listings");
