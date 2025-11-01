@@ -51,6 +51,8 @@
                 <span class="badge bg-success">Confirmed</span>
               <% } else if (booking.status === 'Rejected') { %>
                 <span class="badge bg-danger">Rejected</span>
+              <% } else if (booking.status === 'Expired') { %>
+                <span class="badge bg-secondary">Expired</span>
               <% } else { %>
                 <span class="badge bg-warning text-dark">Pending</span>
               <% } %>
