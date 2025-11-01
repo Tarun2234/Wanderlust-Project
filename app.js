@@ -163,7 +163,7 @@ module.exports = app;
 
 // Optional — start server locally (ignored by Vercel)
 if (require.main === module) {
-  const port = process.env.PORT || 8080;
+  const port = 8080;
   app.listen(port, () => {
     console.log(`🌐 Server running on http://localhost:${port}`);
   });
