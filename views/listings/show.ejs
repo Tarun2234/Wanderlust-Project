@@ -202,9 +202,13 @@
               </div>
               <p class="card-text text-muted"><%= review.comment %></p>
               <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
-                <button class="btn btn-sm btn-outline-danger mt-2">
-                  <i class="fa-solid fa-trash-can me-1"></i> Delete
-                </button>
+                <% if (currUser && currUser._id.equals(review.author._id)) { %>
+                  <button class="btn btn-sm btn-outline-danger mt-2">
+                    <i class="fa-solid fa-trash-can me-1"></i> Delete
+                  </button>
+                <% } else { %>
+                  <div class="mt-2" style="height: 38px;"></div>
+                <% } %>
               </form>
             </div>
           </div>
