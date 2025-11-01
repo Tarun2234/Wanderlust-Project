@@ -56,6 +56,14 @@ const bookingSchema = new mongoose.Schema({
     max: [20, "Cannot exceed 20 people per booking"]
   },
 
+  
+  roomsBooked: {
+    type: Number,
+    required: true,
+    min: [1, "At least 1 room must be booked"],
+    max: [50, "Cannot book more than 50 rooms at once"] // arbitrary safety cap
+  },
+
   specialRequests: {
     type: String,
     trim: true,
@@ -64,7 +72,7 @@ const bookingSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ["Pending", "Confirmed", "Rejected" , "Expired"],
+    enum: ["Pending", "Confirmed", "Rejected", "Expired"],
     default: "Pending"
   },
 
@@ -75,6 +83,12 @@ const bookingSchema = new mongoose.Schema({
 });
 
 // Optional: Auto-expire old pending bookings after 7 days
-bookingSchema.index({ createdAt: 1 }, { expireAfterSeconds: 7 * 24 * 60 * 60, partialFilterExpression: { status: "Pending" } });
+bookingSchema.index(
+  { createdAt: 1 },
+  {
+    expireAfterSeconds: 7 * 24 * 60 * 60,
+    partialFilterExpression: { status: "Pending" }
+  }
+);
 
 module.exports = mongoose.model("Booking", bookingSchema);

@@ -46,12 +46,12 @@
       <div class="row">
         <div class="mb-3 col-md-6">
           <label for="dateFrom" class="form-label">From</label>
-          <input name="booking[dateFrom]" type="date" class="form-control" required min="<%= new Date().toISOString().split('T')[0] %>"id="dateFrom">
+          <input name="booking[dateFrom]" type="date" class="form-control" required min="<%= new Date().toISOString().split('T')[0] %>" id="dateFrom">
           <div class="invalid-feedback">Please select a start date</div>
         </div>
         <div class="mb-3 col-md-6">
           <label for="dateTo" class="form-label">To</label>
-          <input name="booking[dateTo]" type="date" class="form-control" required min="<%= new Date().toISOString().split('T')[0] %>"id="dateTo">
+          <input name="booking[dateTo]" type="date" class="form-control" required min="<%= new Date().toISOString().split('T')[0] %>" id="dateTo">
           <div class="invalid-feedback">Please select an end date</div>
         </div>
       </div>
@@ -60,7 +60,14 @@
       <div class="mb-3">
         <label for="people" class="form-label">Number of People</label>
         <input name="booking[people]" type="number" class="form-control" placeholder="Enter number of guests" required min="1">
-        <div class="invalid-feedback">Please enter a valid number (1 - <%= listing.roomsAvailable %>)</div>
+        <div class="invalid-feedback">Please enter a valid number of people</div>
+      </div>
+
+      <!-- Number of Rooms -->
+      <div class="mb-3">
+        <label for="roomsBooked" class="form-label">Number of Rooms</label>
+        <input name="booking[roomsBooked]" type="number" class="form-control" placeholder="Enter number of rooms" required min="1" max="<%= listing.roomsAvailable %>">
+        <div class="invalid-feedback">You can book up to <%= listing.roomsAvailable %> room(s) only</div>
       </div>
 
       <!-- Special Requests -->

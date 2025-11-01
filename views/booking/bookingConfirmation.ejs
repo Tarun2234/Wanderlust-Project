@@ -13,6 +13,7 @@
       <p class="mb-1"><strong>Listing:</strong> <%= booking.listing.title %></p>
       <p class="mb-1"><strong>From:</strong> <%= booking.dateFrom.toDateString() %></p>
       <p class="mb-1"><strong>To:</strong> <%= booking.dateTo.toDateString() %></p>
+      <p class="mb-1"><strong>Number of Rooms:</strong> <%= booking.roomsBooked %></p>
       <p class="mb-1"><strong>Number of People:</strong> <%= booking.people %></p>
       <p class="mb-1"><strong>Special Requests:</strong> <%= booking.specialRequests || 'None' %></p>
       <p class="mb-1"><strong>Status:</strong> <%= booking.status %></p>

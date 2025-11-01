@@ -37,8 +37,11 @@ router.post("/:listingId/book", isLoggedIn, validateBooking, wrapAsync(async (re
     return res.redirect("/listings");
   }
 
-  if (listing.roomsAvailable <= 0) {
-    req.flash("error", "Sorry, no rooms available for this listing.");
+  // ✅ number of rooms user wants to book
+  const roomsBooked = parseInt(bookingData.roomsBooked) || 1;
+
+  if (roomsBooked > listing.roomsAvailable) {
+    req.flash("error", `Only ${listing.roomsAvailable} room(s) available for this listing.`);
     return res.redirect(`/listings/${listingId}`);
   }
 
@@ -51,6 +54,7 @@ router.post("/:listingId/book", isLoggedIn, validateBooking, wrapAsync(async (re
     dateFrom: bookingData.dateFrom,
     dateTo: bookingData.dateTo,
     people: bookingData.people,
+    roomsBooked, // ✅ corrected field name
     specialRequests: bookingData.specialRequests
   });
 
@@ -101,26 +105,25 @@ router.post("/:bookingId/confirm", isLoggedIn, wrapAsync(async (req, res) => {
     return res.redirect("/bookings/requests");
   }
 
+  // ✅ Check and decrease rooms based on roomsBooked
+  if (booking.roomsBooked > booking.listing.roomsAvailable) {
+    req.flash("error", "Not enough rooms available to confirm this booking.");
+    return res.redirect("/bookings/requests");
+  }
+
   const updatedListing = await Listing.findOneAndUpdate(
-    { _id: booking.listing._id, roomsAvailable: { $gt: 0 } },
-    { $inc: { roomsAvailable: -1 } },
+    { _id: booking.listing._id, roomsAvailable: { $gte: booking.roomsBooked } },
+    { $inc: { roomsAvailable: -booking.roomsBooked } },
     { new: true }
   );
 
   if (!updatedListing) {
-    req.flash("error", "No rooms available to confirm this booking.");
+    req.flash("error", "Unable to confirm booking. Please check availability.");
     return res.redirect("/bookings/requests");
   }
 
   booking.status = "Confirmed";
   await booking.save();
-
-  if (updatedListing.roomsAvailable === 0) {
-    await Booking.updateMany(
-      { listing: booking.listing._id, status: "Pending", _id: { $ne: booking._id } },
-      { $set: { status: "Rejected" } }
-    );
-  }
 
   req.flash("success", "Booking confirmed successfully!");
   res.redirect("/bookings/requests");
@@ -141,8 +144,9 @@ router.post("/:bookingId/reject", isLoggedIn, wrapAsync(async (req, res) => {
     return res.redirect("/bookings/requests");
   }
 
+  // ✅ If booking was confirmed, restore rooms
   if (booking.status === "Confirmed") {
-    await Listing.findByIdAndUpdate(booking.listing._id, { $inc: { roomsAvailable: 1 } });
+    await Listing.findByIdAndUpdate(booking.listing._id, { $inc: { roomsAvailable: booking.roomsBooked } });
   }
 
   booking.status = "Rejected";
@@ -153,7 +157,7 @@ router.post("/:bookingId/reject", isLoggedIn, wrapAsync(async (req, res) => {
 }));
 
 // ------------------------------------------------------
-// ✅ Booking Confirmation Page (New Route)
+// ✅ Booking Confirmation Page
 // ------------------------------------------------------
 router.get("/confirmation/:id", isLoggedIn, wrapAsync(async (req, res) => {
   const booking = await Booking.findById(req.params.id).populate("listing");
@@ -163,7 +167,6 @@ router.get("/confirmation/:id", isLoggedIn, wrapAsync(async (req, res) => {
     return res.redirect("/bookings/myBookings");
   }
 
-  // Ensure user can only see their own booking
   if (!booking.user.equals(req.user._id)) {
     req.flash("error", "You are not authorized to view this booking confirmation.");
     return res.redirect("/bookings/myBookings");

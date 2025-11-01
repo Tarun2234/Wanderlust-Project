@@ -118,6 +118,7 @@ module.exports.bookingSchema = Joi.object({
     dateFrom: Joi.string().required(),
     dateTo: Joi.string().required(),
     people: Joi.number().min(1).required(),
+    roomsBooked: Joi.number().min(1).required(),
     specialRequests: Joi.string().allow(''),
     listingId: Joi.string().required()
   }).required()

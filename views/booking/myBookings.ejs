@@ -30,6 +30,13 @@
                 <i class="fa-solid fa-calendar-check me-2 text-dark"></i>
                 <strong>To:</strong> <%= booking.dateTo.toDateString() %>
               </p>
+
+              <!-- Rooms Booked -->
+              <p class="card-text small text-muted mb-1">
+                <i class="fa-solid fa-door-closed me-2 text-dark"></i>
+                <strong>Rooms Booked:</strong> <%= booking.roomsBooked %>
+              </p>
+
               <p class="card-text small text-muted mb-1">
                 <i class="fa-solid fa-users me-2 text-dark"></i>
                 <strong>People:</strong> <%= booking.people %>
