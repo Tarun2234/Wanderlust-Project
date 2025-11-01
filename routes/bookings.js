@@ -25,7 +25,7 @@ router.get("/:listingId/book", isLoggedIn, wrapAsync(async (req, res) => {
 }));
 
 // ------------------------------------------------------
-// Handle new booking submission
+// Handle new booking submission (with date overlap logic)
 // ------------------------------------------------------
 router.post("/:listingId/book", isLoggedIn, validateBooking, wrapAsync(async (req, res) => {
   const { listingId } = req.params;
@@ -45,6 +45,31 @@ router.post("/:listingId/book", isLoggedIn, validateBooking, wrapAsync(async (re
     return res.redirect(`/listings/${listingId}`);
   }
 
+  const newStart = new Date(bookingData.dateFrom);
+  const newEnd = new Date(bookingData.dateTo);
+
+  // Find confirmed bookings that overlap with this date range
+  const overlappingBookings = await Booking.find({
+    listing: listingId,
+    status: "Confirmed",
+    $or: [
+      { dateFrom: { $lte: newEnd }, dateTo: { $gte: newStart } } // overlap condition
+    ]
+  });
+
+  // Calculate total rooms already booked for overlapping dates
+  const roomsAlreadyBooked = overlappingBookings.reduce((sum, b) => sum + b.roomsBooked, 0);
+
+  // If total rooms booked + requested > total available, reject
+  if (roomsAlreadyBooked + roomsBooked > listing.roomsAvailable) {
+    req.flash(
+      "error",
+      "Not enough rooms available for these dates. Please choose different dates or reduce rooms."
+    );
+    return res.redirect(`/listings/${listingId}`);
+  }
+
+  // Create new booking if no conflict
   const newBooking = new Booking({
     listing: listingId,
     user: req.user._id,
@@ -62,6 +87,7 @@ router.post("/:listingId/book", isLoggedIn, validateBooking, wrapAsync(async (re
   req.flash("success", "Booking request submitted successfully!");
   res.redirect("/bookings/myBookings");
 }));
+
 
 // ------------------------------------------------------
 // User bookings
