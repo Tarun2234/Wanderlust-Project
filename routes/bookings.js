@@ -37,7 +37,7 @@ router.post("/:listingId/book", isLoggedIn, validateBooking, wrapAsync(async (re
     return res.redirect("/listings");
   }
 
-  // ✅ number of rooms user wants to book
+  // number of rooms user wants to book
   const roomsBooked = parseInt(bookingData.roomsBooked) || 1;
 
   if (roomsBooked > listing.roomsAvailable) {
@@ -54,7 +54,7 @@ router.post("/:listingId/book", isLoggedIn, validateBooking, wrapAsync(async (re
     dateFrom: bookingData.dateFrom,
     dateTo: bookingData.dateTo,
     people: bookingData.people,
-    roomsBooked, // ✅ corrected field name
+    roomsBooked,
     specialRequests: bookingData.specialRequests
   });
 
@@ -105,7 +105,7 @@ router.post("/:bookingId/confirm", isLoggedIn, wrapAsync(async (req, res) => {
     return res.redirect("/bookings/requests");
   }
 
-  // ✅ Check and decrease rooms based on roomsBooked
+  // Check and decrease rooms based on roomsBooked
   if (booking.roomsBooked > booking.listing.roomsAvailable) {
     req.flash("error", "Not enough rooms available to confirm this booking.");
     return res.redirect("/bookings/requests");
@@ -144,7 +144,7 @@ router.post("/:bookingId/reject", isLoggedIn, wrapAsync(async (req, res) => {
     return res.redirect("/bookings/requests");
   }
 
-  // ✅ If booking was confirmed, restore rooms
+  // If booking was confirmed, restore rooms
   if (booking.status === "Confirmed") {
     await Listing.findByIdAndUpdate(booking.listing._id, { $inc: { roomsAvailable: booking.roomsBooked } });
   }
@@ -157,7 +157,7 @@ router.post("/:bookingId/reject", isLoggedIn, wrapAsync(async (req, res) => {
 }));
 
 // ------------------------------------------------------
-// ✅ Booking Confirmation Page
+// Booking Confirmation Page
 // ------------------------------------------------------
 router.get("/confirmation/:id", isLoggedIn, wrapAsync(async (req, res) => {
   const booking = await Booking.findById(req.params.id).populate("listing");
